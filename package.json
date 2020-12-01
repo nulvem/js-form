@@ -11,6 +11,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rm -rf dist && rollup -c rollup.config.js && tsc --emitDeclarationOnly",
+    "publish": "npm run build && npm publish",
     "watch": "rollup -cw",
     "test": "jest"
   },
