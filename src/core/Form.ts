@@ -1,5 +1,192 @@
+import { Errors } from './Errors'
+import {Field, FieldDeclaration, Fields} from '../types/fields'
+import { objectToFormData } from '../helpers'
+import { generateFieldDeclaration } from '../helpers/fields'
+
 export class Form {
-  public testCode(): void {
-    alert('It works!')
+  public errors: Errors = new Errors
+
+  public rules
+
+  public options
+
+  public $initialValues: string[] = []
+
+  public $fields: Fields = {}
+
+  public submitting: boolean = false
+
+  public constructor(
+    fields: {},
+    options: {}
+  ) {
+    this.addFields(fields)
+    this.addOptions(options)
   }
+
+  /**
+   * fill
+   */
+  public fill(
+    data: { [key: string]: any },
+    updateInitialValues: boolean = false
+  ) {
+    Object.keys(data).forEach((field: string) => {
+      let value = data[field]
+
+      if (updateInitialValues) {
+        this.$initialValues[field] = value
+      }
+
+      this[field] = value
+    })
+
+    return this
+  }
+
+  /**
+   * getFieldsKeys
+   */
+  public getFieldsKeys(): string[] {
+    return Object.keys(this.$initialValues)
+  }
+
+  /**
+   * addField
+   */
+  public addField(
+    field: string,
+    value: Field
+  ) {
+    this[field] = value.value
+
+    this.$initialValues[field] = value.value
+
+    const fieldDeclaration: FieldDeclaration = generateFieldDeclaration(value)
+
+    this.$fields[field] = fieldDeclaration
+
+    return this
+  }
+
+  /**
+   * addFields
+   */
+  public addFields(fields: Fields) {
+    Object.keys(fields).forEach((field: string): void => {
+      this.addField(field, fields[field])
+    })
+
+    return this
+  }
+
+  /**
+   * addOptions
+   */
+  public addOptions(options: object) {
+    this.options = options
+
+    return this
+  }
+
+  /**
+   * hasField
+   */
+  public hasField(field: string): boolean {
+    return this.hasOwnProperty(field)
+  }
+
+  /**
+   * getField
+   */
+  public getField(field: string) {
+    return {
+      key: field,
+      value: this[field]
+    }
+  }
+
+  /**
+   * removeField
+   */
+  public removeField(field: string) {
+    delete this[field]
+    delete this.$initialValues[field]
+
+    // this.rules.unset(field)
+
+    return this
+  }
+
+  /**
+   * removeFields
+   */
+  public removeFields(fields: string[]) {
+    fields.forEach((field: string): void => {
+      this.removeField(field)
+    })
+
+    return this
+  }
+
+  /**
+   * values
+   */
+  public values() {
+    const values = {}
+
+    this.getFieldsKeys().forEach((field: string): void => {
+      let value = this[field]
+
+      values[field] = value
+    })
+
+    return values
+  }
+
+  /**
+   * valuesAsFormData
+   */
+  public valuesAsFormData(): FormData {
+    return objectToFormData(this.values)
+  }
+
+  /**
+   * valuesAsFormJson
+   */
+  public valuesAsFormJson() {
+    return JSON.stringify(this.values)
+  }
+
+  /**
+   * reset
+   */
+  public reset() {
+    this.resetValues()
+    this.errors.clear()
+
+    return this
+  }
+
+  /**
+   * resetValues
+   */
+  public resetValues() {
+    this.fill(this.$initialValues)
+
+    return this
+  }
+
+  /**
+   * validate
+   */
+  // public validate(field: string | null): Promise<any> {
+  //   return field ? this.validateField(field) : this.validateForm()
+  // }
+
+  /**
+   * submit
+   */
+  // public submit(): Promise<any> {
+  // }
 }
