@@ -4,8 +4,14 @@ import { objectToFormData } from '../utils/helpers'
 import { generateFieldDeclaration } from '../utils/fields'
 import { Rules } from './Rules'
 import { Messages } from './Messages'
+import axios from 'axios'
+import { AxiosInstance, AxiosResponse, AxiosError } from 'axios'
+import { Items } from '../types/collections'
 
 export class Form {
+
+  public $axios: AxiosInstance
+
   public $errors: Errors = new Errors()
 
   public $rules: Rules = new Rules()
@@ -24,6 +30,11 @@ export class Form {
   ) {
     this.addFields(fields)
     this.addOptions(options)
+    this.createHttpInstance()
+  }
+
+  public createHttpInstance() {
+    this.$axios = axios
   }
 
   /**
@@ -240,8 +251,60 @@ export class Form {
   }
 
   /**
-   * submit
+   * Post handle
+   *
+   * @param url
    */
-  // public submit(): Promise<any> {
-  // }
+  public async post(url: string) {
+    return await this.submit('post', url)
+  }
+
+  /**
+   * Submit the form
+   *
+   * @param method
+   * @param url
+   */
+  public submit(method: string, url: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.$axios[method](url, this.values())
+        .then((response: { data: AxiosResponse }) => {
+          let data = response
+          this.onSuccess(data, true)
+          resolve(data)
+        })
+        .catch((error: { response: { data: { errors: AxiosError }; status: number } }) => {
+          let data = error.response.data
+          if (error.response.status === 422) {
+            this.onFail(error.response.data.errors)
+          } else {
+            this.onFail(data)
+          }
+          reject(data)
+        })
+    })
+  }
+
+  /**
+   * Handle a successful form submission
+   *
+   * @param response
+   * @param resetForm
+   */
+  public onSuccess(response: { data: AxiosResponse }, resetForm: boolean) {
+    if (resetForm) {
+      this.reset()
+    }
+
+    return response
+  }
+
+  /**
+   * Handle a failed form submission
+   *
+   * @param errors
+   */
+  public onFail(errors: any) {
+    this.$errors.fill(errors)
+  }
 }

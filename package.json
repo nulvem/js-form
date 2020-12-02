@@ -33,7 +33,9 @@
     "forms-vue",
     "js"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "axios": "^0.21.0"
+  },
   "devDependencies": {
     "rollup": "^2.34.0",
     "rollup-plugin-terser": "^7.0.2",
