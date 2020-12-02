@@ -7,6 +7,8 @@ import { Messages } from './Messages'
 import axios from 'axios'
 import { AxiosInstance, AxiosResponse, AxiosError } from 'axios'
 import { Items } from '../types/collections'
+import { validations as Validate } from '../utils/validations'
+import warn from '../utils/warn'
 
 export class Form {
 
@@ -152,21 +154,21 @@ export class Form {
   /**
    * valuesAsFormData
    */
-  public valuesAsFormData(): FormData {
+  public $valuesAsFormData(): FormData {
     return objectToFormData(this.values)
   }
 
   /**
    * valuesAsFormJson
    */
-  public valuesAsFormJson() {
+  public $valuesAsFormJson() {
     return JSON.stringify(this.values)
   }
 
   /**
    * reset
    */
-  public reset() {
+  public $reset() {
     this.resetValues()
     this.$errors.clear()
 
@@ -187,47 +189,36 @@ export class Form {
    */
   public async $validateField(field: string): Promise<any> {
     this.$errors.unset(field)
-    // this.$validating.push(fieldKey)
 
-    // const defaultMessage = createRuleMessageFunction(
-    //   this.$options.validation.defaultMessage
-    // )
-    // const field: Field = this.$getField(fieldKey)
+    const value: any = this.getField(field)
 
-    // let fieldRulesChain: (Rule | ConditionalRules)[] = Array.from(
-    //   this.$rules.get(fieldKey)
-    // )
+    const rules: string[] = this.$rules.get(field)
 
-    // while (fieldRulesChain.length) {
-    //   let rule = fieldRulesChain.shift()
+    const promises = rules.map(
+      (rule: string): Promise<any> => {
+        if (Validate[rule]) {
+          return Validate[rule](value)
+          .then(() => {
+            return Promise.resolve()
+          })
+          .catch((error) => {
+            const message = this.$messages.get(field)
 
-    //   if (rule === undefined) {
-    //     continue
-    //   }
+            if (message) {
+              this.$errors.push(field, message[rule])
+            }
 
-    //   try {
-    //     if (rule instanceof ConditionalRules) {
-    //       rule.condition(field, this) &&
-    //         (fieldRulesChain = [...rule.all(), ...fieldRulesChain])
+            return Promise.reject(error)
+          })
+        }
 
-    //       continue
-    //     }
+        warn(`There is no validation rule called "${rule}"`)
 
-    //     await rule.validate(field, this, defaultMessage)
-    //   } catch (error) {
-    //     // If the error is not a RuleValidationError - the error will bubble up
-    //     if (!(error instanceof RuleValidationError)) {
-    //       throw error
-    //     }
+        return Promise.reject()
+      }
+    )
 
-    //     this.$errors.push(fieldKey, error.message)
-
-    //     this.$options.validation.stopAfterFirstRuleFailed &&
-    //       (fieldRulesChain = [])
-    //   }
-    // }
-
-    // this.$validating.unset(fieldKey)
+    return Promise.all(promises)
   }
 
   /**
@@ -293,7 +284,7 @@ export class Form {
    */
   public onSuccess(response: { data: AxiosResponse }, resetForm: boolean) {
     if (resetForm) {
-      this.reset()
+      this.$reset()
     }
 
     return response

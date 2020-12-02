@@ -28,11 +28,13 @@ export class Collection<T> {
   }
 
   public push(
-      key: string,
-      data: any
-    ): this {
-
-    this.collection[key] = data
+    key: string,
+    data: any
+  ): this {
+    this.collection = {
+      ...this.collection,
+      [key]: data
+    }
 
     return this
   }
@@ -46,7 +48,7 @@ export class Collection<T> {
   public get<D>(
     item: string,
     defaultValue: D = null
-  ): T | D {
+  ): any {
     if (!this.has(item)) {
       return defaultValue
     }
