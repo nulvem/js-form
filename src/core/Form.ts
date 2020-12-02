@@ -1,18 +1,16 @@
 import { Errors } from './Errors'
-import {Field, FieldDeclaration, Fields} from '../types/fields'
+import { Field, Fields } from '../types/fields'
 import { objectToFormData } from '../helpers'
-import { generateFieldDeclaration } from '../helpers/fields'
 
 export class Form {
-  public errors: Errors = new Errors
+
+  public errors: Errors = new Errors()
 
   public rules
 
   public options
 
-  public $initialValues: string[] = []
-
-  public $fields: Fields = {}
+  public $initialValues: Fields = {}
 
   public submitting: boolean = false
 
@@ -58,13 +56,8 @@ export class Form {
     field: string,
     value: Field
   ) {
-    this[field] = value.value
-
-    this.$initialValues[field] = value.value
-
-    const fieldDeclaration: FieldDeclaration = generateFieldDeclaration(value)
-
-    this.$fields[field] = fieldDeclaration
+    this[field] = value
+    this.$initialValues[field] = value
 
     return this
   }
@@ -84,26 +77,16 @@ export class Form {
    * addOptions
    */
   public addOptions(options: object) {
-    this.options = options
+    this.options = options || {}
 
     return this
-  }
-
-  /**
-   * hasField
-   */
-  public hasField(field: string): boolean {
-    return this.hasOwnProperty(field)
   }
 
   /**
    * getField
    */
   public getField(field: string) {
-    return {
-      key: field,
-      value: this[field]
-    }
+    return this[field]
   }
 
   /**
@@ -112,8 +95,6 @@ export class Form {
   public removeField(field: string) {
     delete this[field]
     delete this.$initialValues[field]
-
-    // this.rules.unset(field)
 
     return this
   }
@@ -130,7 +111,7 @@ export class Form {
   }
 
   /**
-   * values
+   * valuespublic
    */
   public values() {
     const values = {}
