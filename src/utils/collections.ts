@@ -45,9 +45,9 @@ export class Collection<T> {
     return this.collection.hasOwnProperty(item)
   }
 
-  public get<D>(
+  public get(
     item: string,
-    defaultValue: D = null
+    defaultValue: any = null
   ): any {
     if (!this.has(item)) {
       return defaultValue
