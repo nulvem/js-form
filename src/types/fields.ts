@@ -1,11 +1,13 @@
+import { Validation } from './validations'
+
 export interface Field {
-  rules?: object,
+  validation?: object,
   reset?: boolean,
   value: any
 }
 
 export interface FieldDeclaration {
-  rules: object,
+  validation: Validation,
   reset: boolean,
   value: any
 }

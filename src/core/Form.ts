@@ -1,18 +1,22 @@
 import { Errors } from './Errors'
-import { Field, Fields } from '../types/fields'
-import { objectToFormData } from '../helpers'
+import { Field, FieldDeclaration, Fields } from '../types/fields'
+import { objectToFormData } from '../helpers/helpers'
+import { generateFieldDeclaration } from '../helpers/fields'
+import { Rules } from './Rules'
+import { Messages } from './Messages'
 
 export class Form {
+  public $errors: Errors = new Errors()
 
-  public errors: Errors = new Errors()
+  public $rules: Rules = new Rules()
 
-  public rules
+  public $messages: Messages = new Messages()
 
-  public options
+  public $options
 
   public $initialValues: Fields = {}
 
-  public submitting: boolean = false
+  public $submitting: boolean = false
 
   public constructor(
     fields: {},
@@ -56,8 +60,14 @@ export class Form {
     field: string,
     value: Field
   ) {
-    this[field] = value
-    this.$initialValues[field] = value
+    const fieldDeclaration: FieldDeclaration = generateFieldDeclaration(value)
+
+    this[field] = fieldDeclaration.value
+
+    this.$initialValues[field] = fieldDeclaration.value
+
+    this.$messages.push(field, fieldDeclaration.validation.messages)
+    this.$rules.push(field, fieldDeclaration.validation.rules)
 
     return this
   }
@@ -77,7 +87,7 @@ export class Form {
    * addOptions
    */
   public addOptions(options: object) {
-    this.options = options || {}
+    this.$options = options || {}
 
     return this
   }
@@ -144,7 +154,7 @@ export class Form {
    */
   public reset() {
     this.resetValues()
-    this.errors.clear()
+    this.$errors.clear()
 
     return this
   }

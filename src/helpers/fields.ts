@@ -1,9 +1,20 @@
 import { FieldDeclaration } from '../types/fields'
 
+const generateValidationRules = (rules: string | string[]): string[] => {
+  return typeof rules === 'string' ?
+    rules.split('|') :
+    rules
+}
+
 export const generateFieldDeclaration = (value: any): FieldDeclaration => {
   return {
-    rules: value.hasOwnProperty('rules') ? value.rules : [],
-    reset: value.hasOwnProperty('reset') ? value.reset : true,
-    value: value.hasOwnProperty('value') ? value.value : value || null
+    validation: {
+      rules: value.validation?.rules ?
+        generateValidationRules(value.validation.rules) :
+        [],
+      messages: value.validation?.messages || {}
+    },
+    reset: value.reset || true,
+    value: value.value || null
   }
 }
