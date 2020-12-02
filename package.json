@@ -1,6 +1,6 @@
 {
   "name": "@nulvem/js-form",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "private": false,
   "description": "",
   "main": "dist/index.js",
@@ -11,7 +11,6 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rm -rf dist && rollup -c rollup.config.js && tsc --emitDeclarationOnly",
-    "publish": "npm run build && npm publish",
     "watch": "rollup -cw",
     "test": "jest"
   },
