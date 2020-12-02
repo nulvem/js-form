@@ -49,7 +49,7 @@ export class Form {
   /**
    * getFieldsKeys
    */
-  public getFieldsKeys(): string[] {
+  public $getFieldsKeys(): string[] {
     return Object.keys(this.$initialValues)
   }
 
@@ -106,6 +106,9 @@ export class Form {
     delete this[field]
     delete this.$initialValues[field]
 
+    this.$messages.unset(field)
+    this.$rules.unset(field)
+
     return this
   }
 
@@ -126,7 +129,7 @@ export class Form {
   public values() {
     const values = {}
 
-    this.getFieldsKeys().forEach((field: string): void => {
+    this.$getFieldsKeys().forEach((field: string): void => {
       let value = this[field]
 
       values[field] = value
@@ -169,11 +172,72 @@ export class Form {
   }
 
   /**
+   * $validateField
+   */
+  public async $validateField(field: string): Promise<any> {
+    this.$errors.unset(field)
+    // this.$validating.push(fieldKey)
+
+    // const defaultMessage = createRuleMessageFunction(
+    //   this.$options.validation.defaultMessage
+    // )
+    // const field: Field = this.$getField(fieldKey)
+
+    // let fieldRulesChain: (Rule | ConditionalRules)[] = Array.from(
+    //   this.$rules.get(fieldKey)
+    // )
+
+    // while (fieldRulesChain.length) {
+    //   let rule = fieldRulesChain.shift()
+
+    //   if (rule === undefined) {
+    //     continue
+    //   }
+
+    //   try {
+    //     if (rule instanceof ConditionalRules) {
+    //       rule.condition(field, this) &&
+    //         (fieldRulesChain = [...rule.all(), ...fieldRulesChain])
+
+    //       continue
+    //     }
+
+    //     await rule.validate(field, this, defaultMessage)
+    //   } catch (error) {
+    //     // If the error is not a RuleValidationError - the error will bubble up
+    //     if (!(error instanceof RuleValidationError)) {
+    //       throw error
+    //     }
+
+    //     this.$errors.push(fieldKey, error.message)
+
+    //     this.$options.validation.stopAfterFirstRuleFailed &&
+    //       (fieldRulesChain = [])
+    //   }
+    // }
+
+    // this.$validating.unset(fieldKey)
+  }
+
+  /**
+   * $validateForm
+   */
+  public $validateForm(): Promise<any> {
+    const promises = this.$getFieldsKeys().map(
+      (field: string): Promise<any> => {
+        return this.$validateField(field)
+      }
+    )
+
+    return Promise.all(promises)
+  }
+
+  /**
    * validate
    */
-  // public validate(field: string | null): Promise<any> {
-  //   return field ? this.validateField(field) : this.validateForm()
-  // }
+  public $validate(field: string | null): Promise<any> {
+    return field ? this.$validateField(field) : this.$validateForm()
+  }
 
   /**
    * submit
