@@ -1,4 +1,4 @@
-import { Collection } from '../helpers/collections'
+import { Collection } from '../utils/collections'
 
 export class Rules extends Collection<string[]> {
 }

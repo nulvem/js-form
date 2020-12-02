@@ -1,7 +1,7 @@
 import { Errors } from './Errors'
 import { Field, FieldDeclaration, Fields } from '../types/fields'
-import { objectToFormData } from '../helpers/helpers'
-import { generateFieldDeclaration } from '../helpers/fields'
+import { objectToFormData } from '../utils/helpers'
+import { generateFieldDeclaration } from '../utils/fields'
 import { Rules } from './Rules'
 import { Messages } from './Messages'
 
