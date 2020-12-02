@@ -6,7 +6,6 @@ import { Rules } from './Rules'
 import { Messages } from './Messages'
 import axios from 'axios'
 import { AxiosInstance, AxiosResponse, AxiosError } from 'axios'
-import { Items } from '../types/collections'
 import { validations as Validate } from '../utils/validations'
 import warn from '../utils/warn'
 
