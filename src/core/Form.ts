@@ -31,7 +31,7 @@ export class Form {
   ) {
     this.$addFields(fields)
     this.$addOptions(options)
-    this.createHttpInstance()
+    this.$createHttpInstance()
   }
 
   public $createHttpInstance() {
