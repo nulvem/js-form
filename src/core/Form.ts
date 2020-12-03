@@ -29,19 +29,19 @@ export class Form {
     fields: {},
     options: {}
   ) {
-    this.addFields(fields)
-    this.addOptions(options)
+    this.$addFields(fields)
+    this.$addOptions(options)
     this.createHttpInstance()
   }
 
-  public createHttpInstance() {
+  public $createHttpInstance() {
     this.$axios = axios
   }
 
   /**
    * fill
    */
-  public fill(
+  public $fill(
     data: { [key: string]: any },
     updateInitialValues: boolean = false
   ) {
@@ -68,7 +68,7 @@ export class Form {
   /**
    * addField
    */
-  public addField(
+  public $addField(
     field: string,
     value: Field
   ) {
@@ -87,9 +87,9 @@ export class Form {
   /**
    * addFields
    */
-  public addFields(fields: Fields) {
+  public $addFields(fields: Fields) {
     Object.keys(fields).forEach((field: string): void => {
-      this.addField(field, fields[field])
+      this.$addField(field, fields[field])
     })
 
     return this
@@ -98,7 +98,7 @@ export class Form {
   /**
    * addOptions
    */
-  public addOptions(options: object) {
+  public $addOptions(options: object) {
     this.$options = options || {}
 
     return this
@@ -107,14 +107,14 @@ export class Form {
   /**
    * getField
    */
-  public getField(field: string) {
+  public $getField(field: string) {
     return this[field]
   }
 
   /**
    * removeField
    */
-  public removeField(field: string) {
+  public $removeField(field: string) {
     delete this[field]
     delete this.$initialValues[field]
 
@@ -127,9 +127,9 @@ export class Form {
   /**
    * removeFields
    */
-  public removeFields(fields: string[]) {
+  public $removeFields(fields: string[]) {
     fields.forEach((field: string): void => {
-      this.removeField(field)
+      this.$removeField(field)
     })
 
     return this
@@ -138,7 +138,7 @@ export class Form {
   /**
    * valuespublic
    */
-  public values() {
+  public $values() {
     const values = {}
 
     this.$getFieldsKeys().forEach((field: string): void => {
@@ -154,21 +154,21 @@ export class Form {
    * valuesAsFormData
    */
   public $valuesAsFormData(): FormData {
-    return objectToFormData(this.values)
+    return objectToFormData(this.$values)
   }
 
   /**
    * valuesAsFormJson
    */
   public $valuesAsFormJson() {
-    return JSON.stringify(this.values)
+    return JSON.stringify(this.$values)
   }
 
   /**
    * reset
    */
   public $reset() {
-    this.resetValues()
+    this.$resetValues()
     this.$errors.clear()
 
     return this
@@ -177,8 +177,8 @@ export class Form {
   /**
    * resetValues
    */
-  public resetValues() {
-    this.fill(this.$initialValues)
+  public $resetValues() {
+    this.$fill(this.$initialValues)
 
     return this
   }
@@ -189,7 +189,7 @@ export class Form {
   public async $validateField(field: string): Promise<any> {
     this.$errors.unset(field)
 
-    const value: any = this.getField(field)
+    const value: any = this.$getField(field)
 
     const rules: string[] = this.$rules.get(field)
 
@@ -245,8 +245,8 @@ export class Form {
    *
    * @param url
    */
-  public async post(url: string) {
-    return await this.submit('POST', url)
+  public async $post(url: string) {
+    return await this.$submit('POST', url)
   }
 
   /**
@@ -254,8 +254,8 @@ export class Form {
    *
     * @param url
     */
-  public put(url: string) {
-    return this.submit('PUT', url)
+  public $put(url: string) {
+    return this.$submit('PUT', url)
   }
 
   /**
@@ -263,8 +263,8 @@ export class Form {
    *
     * @param url
     */
-  public patch(url: string) {
-    return this.submit('PATCH', url)
+  public $patch(url: string) {
+    return this.$submit('PATCH', url)
   }
 
   /**
@@ -272,8 +272,8 @@ export class Form {
    *
    * @param url
    */
-  public delete(url: string) {
-    return this.submit('DELETE', url)
+  public $delete(url: string) {
+    return this.$submit('DELETE', url)
   }
 
   /**
@@ -282,21 +282,21 @@ export class Form {
    * @param method
    * @param url
    */
-  public submit(method: string, url: string): Promise<any> {
+  public $submit(method: string, url: string): Promise<any> {
     return new Promise((resolve, reject) => {
       this.$submitting = true
-      this.$axios[method](url, this.values())
+      this.$axios[method](url, this.$values())
         .then((response: { data: AxiosResponse }) => {
           let data = response
-          this.onSuccess(data, true)
+          this.$onSuccess(data, true)
           resolve(data)
         })
         .catch((error: { response: { data: { errors: AxiosError }; status: number } }) => {
           let data = error.response.data
           if (error.response.status === 422) {
-            this.onFail(error.response.data.errors)
+            this.$onFail(error.response.data.errors)
           } else {
-            this.onFail(data)
+            this.$onFail(data)
           }
           reject(data)
         })
@@ -309,7 +309,7 @@ export class Form {
    * @param response
    * @param resetForm
    */
-  public onSuccess(response: { data: AxiosResponse }, resetForm: boolean) {
+  public $onSuccess(response: { data: AxiosResponse }, resetForm: boolean) {
     if (resetForm) {
       this.$reset()
     }
@@ -322,7 +322,7 @@ export class Form {
    *
    * @param errors
    */
-  public onFail(errors: any) {
+  public $onFail(errors: any) {
     this.$submitting = false
     this.$errors.fill(errors)
   }
