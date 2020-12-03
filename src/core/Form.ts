@@ -284,7 +284,7 @@ export class Form {
    */
   public submit(method: string, url: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.$submitting = false
+      this.$submitting = true
       this.$axios[method](url, this.values())
         .then((response: { data: AxiosResponse }) => {
           let data = response
