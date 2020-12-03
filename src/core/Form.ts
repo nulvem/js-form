@@ -197,18 +197,18 @@ export class Form {
       (rule: string): Promise<any> => {
         if (Validate[rule]) {
           return Validate[rule](value)
-          .then(() => {
-            return Promise.resolve()
-          })
-          .catch((error) => {
-            const message = this.$messages.get(field)
+            .then(() => {
+              return Promise.resolve()
+            })
+            .catch((error) => {
+              const message = this.$messages.get(field)
 
-            if (message) {
-              this.$errors.push(field, message[rule])
-            }
+              if (message) {
+                this.$errors.push(field, message[rule])
+              }
 
-            return Promise.reject(error)
-          })
+              return Promise.reject(error)
+            })
         }
 
         warn(`There is no validation rule called "${rule}"`)
@@ -284,6 +284,7 @@ export class Form {
    */
   public submit(method: string, url: string): Promise<any> {
     return new Promise((resolve, reject) => {
+      this.$submitting = false
       this.$axios[method](url, this.values())
         .then((response: { data: AxiosResponse }) => {
           let data = response
@@ -312,7 +313,7 @@ export class Form {
     if (resetForm) {
       this.$reset()
     }
-
+    this.$submitting = false
     return response
   }
 
@@ -322,6 +323,7 @@ export class Form {
    * @param errors
    */
   public onFail(errors: any) {
+    this.$submitting = false
     this.$errors.fill(errors)
   }
 }
