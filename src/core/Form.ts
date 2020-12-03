@@ -246,7 +246,34 @@ export class Form {
    * @param url
    */
   public async post(url: string) {
-    return await this.submit('post', url)
+    return await this.submit('POST', url)
+  }
+
+  /**
+   * Send a PUT request to the given URL.
+   *
+    * @param url
+    */
+  public put(url: string) {
+    return this.submit('PUT', url)
+  }
+
+  /**
+   * Send a PATCH request to the given URL.
+   *
+    * @param url
+    */
+  public patch(url: string) {
+    return this.submit('PATCH', url)
+  }
+
+  /**
+   * Send a DELETE request to the given URL.
+   *
+   * @param url
+   */
+  public delete(url: string) {
+    return this.submit('DELETE', url)
   }
 
   /**
