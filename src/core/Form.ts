@@ -70,11 +70,15 @@ export class Form {
    */
   public $addField(
     field: string,
-    value: Field
+    value: Field,
+    context: any
   ) {
     const fieldDeclaration: FieldDeclaration = generateFieldDeclaration(value)
 
-    this[field] = fieldDeclaration.value
+    // Has context
+    context
+      ? context.$set(this, this[field], value)
+      : this[field] = fieldDeclaration.value
 
     this.$initialValues[field] = fieldDeclaration.value
 
@@ -89,7 +93,7 @@ export class Form {
    */
   public $addFields(fields: Fields) {
     Object.keys(fields).forEach((field: string): void => {
-      this.$addField(field, fields[field])
+      this.$addField(field, fields[field], null)
     })
 
     return this
