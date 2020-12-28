@@ -77,7 +77,7 @@ export class Form {
 
     // Has context
     context
-      ? Object.assign({}, context[field], value)
+      ? Object.assign({}, context[field], fieldDeclaration.value)
       : this[field] = fieldDeclaration.value
 
     this.$initialValues[field] = fieldDeclaration.value
